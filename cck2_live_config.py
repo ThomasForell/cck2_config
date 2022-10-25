@@ -52,7 +52,25 @@ class Widget(QWidget):
         boxTeam.setLayout(grid)
 
         vbox.addWidget(boxTeam)
-        vbox.addWidget(QPushButton("Werbung"))
+
+        boxWerbung = QGroupBox("Werbung")
+        grid = QGridLayout(boxWerbung)
+        grid.addWidget(QPushButton("<-"), 0, 0)
+        grid.addWidget(QPushButton("->"), 0, 1)
+        grid.addWidget(QPushButton("+"), 0, 2)
+        grid.addWidget(QPushButton("-"), 0, 3)
+        grid.addWidget(QPushButton(), 1, 0, 1, 4)
+        
+        form = QFormLayout()
+        form.addRow("Anzeigedauer Live Stream", QSpinBox())
+        form.addRow("Anzeigedauer TV Links", QSpinBox())
+        form.addRow("Anzeigedauer TV Rechts", QSpinBox())
+
+        grid.addLayout(form, 2, 0, 1, 4)
+        boxWerbung.setLayout(grid)
+
+        vbox.addWidget(boxWerbung)
+        
         vbox.addWidget(QPushButton("Speichern"))
         self.setLayout(grid)
 
