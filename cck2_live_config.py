@@ -7,6 +7,15 @@ from PySide2.QtWidgets import QApplication, QWidget, QGridLayout, QFormLayout, Q
 from PySide2.QtCore import QFile, QSize
 from PySide2.QtGui import QIcon, QPixmap
 
+def getIconSize100(pixmap):
+    size = pixmap.size()
+    # icons are squares, scale to crop empty part if necessary
+    if size.height() > size.width():
+        aSize = 100
+    else:
+        aSize = size.width() / size.height() * 100
+    return aSize
+
 
 class Widget(QWidget):
     def __init__(self):
@@ -24,17 +33,14 @@ class Widget(QWidget):
         grid.addWidget(QPushButton("-"), 0, 3)
         form = QFormLayout()
 
-        logoHeim = QPixmap("../cck2_live/Logos/SKC_Nibelungen_Lorsch.png")
-        logoGast = QPixmap("../cck2_live/Logos/BW_Wiesbaden.jpg")
         heim = QPushButton()
         gast = QPushButton()
-
-        heim.setIcon(logoHeim)
+        heimPixamp = QPixmap("../cck2_live/Logos/KSC_Frammersbach.jpg")
+        heim.setIcon(heimPixamp)
         heim.setIconSize(QSize(100, 100))
-        heim.setFixedSize(110, 110)
-        gast.setIcon(logoGast)
+        gastPixmap = QPixmap("../cck2_live/Logos/KSC_Groß-Zimmern.jpg")
+        gast.setIcon(gastPixmap)
         gast.setIconSize(QSize(100, 100))
-        gast.setFixedSize(110, 110)
 
         form.addRow("Logo Heim", heim)
         form.addRow("Logo Gast", gast)
@@ -59,7 +65,14 @@ class Widget(QWidget):
         grid.addWidget(QPushButton("->"), 0, 1)
         grid.addWidget(QPushButton("+"), 0, 2)
         grid.addWidget(QPushButton("-"), 0, 3)
-        grid.addWidget(QPushButton(), 1, 0, 1, 4)
+
+        advertize = QPushButton()
+        aPixmap = QPixmap("../cck2_live/Werbung/kc-lorsch.png")
+        aSize = getIconSize100(aPixmap)
+        advertize.setIcon(aPixmap)
+        advertize.setIconSize(QSize(aSize, aSize))
+        advertize.setFixedHeight(110)
+        grid.addWidget(advertize, 1, 0, 1, 4)
         
         form = QFormLayout()
         form.addRow("Anzeigedauer Live Stream", QSpinBox())
