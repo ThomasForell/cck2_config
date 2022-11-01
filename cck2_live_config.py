@@ -20,12 +20,14 @@ def getIconSize100(pixmap):
 class Widget(QWidget):
     def __init__(self):
         super(Widget, self).__init__()
+        
         self.config = dict()
+        self.config["live_pfad"] = "."
         self.config["tv"] = [["Livestream", "mannschaft_config.json"], ["TV Links", "tvlinks_config.json"], ["TV Rechts", "tvrechts_config.json"]]
 
         self.data = []
         for tv in self.config["tv"]:
-            d = json.load(open(tv[1], "r")) 
+            d = json.load(open(os.path.join(self.config["live_pfad"], tv[1]), "r")) 
             self.data.append(d)
 
         self.load_ui()
