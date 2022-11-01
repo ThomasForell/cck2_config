@@ -2,6 +2,7 @@
 import os
 from pathlib import Path
 import sys
+import json
 
 from PySide2.QtWidgets import QApplication, QWidget, QGridLayout, QFormLayout, QSpinBox, QLineEdit, QCheckBox, QPushButton, QLabel, QGroupBox, QVBoxLayout
 from PySide2.QtCore import QFile, QSize
@@ -16,12 +17,17 @@ def getIconSize100(pixmap):
         aSize = size.width() / size.height() * 100
     return aSize
 
-
 class Widget(QWidget):
     def __init__(self):
         super(Widget, self).__init__()
         self.config = dict()
-        self.config["tv"] = [("Livestream", "mannschaft_config.json"), ("TV Links", "tvlinks_config.json"), ("TV Rechts", "tvrechts_config.json")]
+        self.config["tv"] = [["Livestream", "mannschaft_config.json"], ["TV Links", "tvlinks_config.json"], ["TV Rechts", "tvrechts_config.json"]]
+
+        self.data = []
+        for tv in self.config["tv"]:
+            d = json.load(open(tv[1], "r")) 
+            self.data.append(d)
+
         self.load_ui()
 
     def load_ui(self):
