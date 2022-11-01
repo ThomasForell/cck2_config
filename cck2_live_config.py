@@ -37,37 +37,43 @@ class Widget(QWidget):
 
         boxTeam = QGroupBox("Team")
         grid = QGridLayout(boxTeam)
-        self.buttonLeftTeam = QPushButton("")
-        self.buttonLeftTeam.setFixedHeight(35)
-        self.buttonLeftTeam.setIcon(QPixmap("winkel-links.png"))
-        self.buttonRightTeam = QPushButton("")
-        self.buttonRightTeam.setFixedHeight(35)
-        self.buttonRightTeam.setIcon(QPixmap("winkel-rechts.png"))
-        self.buttonTrashTeam = QPushButton("")
-        self.buttonTrashTeam.setFixedHeight(35)
-        self.buttonTrashTeam.setIcon(QPixmap("mull.png"))
-        self.buttonAddTeam = QPushButton("")
-        self.buttonAddTeam.setFixedHeight(35)
-        self.buttonAddTeam.setIcon(QPixmap("plus.png"))
-        grid.addWidget(self.buttonLeftTeam, 0, 0)
-        grid.addWidget(self.buttonRightTeam, 0, 1)
-        grid.addWidget(self.buttonAddTeam, 0, 2)
-        grid.addWidget(self.buttonTrashTeam, 0, 3)
+        self.buttonTeamPrev = QPushButton("")
+        self.buttonTeamPrev.setFixedHeight(35)
+        self.buttonTeamPrev.setIcon(QPixmap("winkel-links.png"))
+        self.buttonTeamPrev.clicked.connect(self.button_team_prev)
+        self.buttonTeamNext = QPushButton("")
+        self.buttonTeamNext.setFixedHeight(35)
+        self.buttonTeamNext.setIcon(QPixmap("winkel-rechts.png"))
+        self.buttonTeamNext.clicked.connect(self.button_team_next)
+        self.buttonTeamDelete = QPushButton("")
+        self.buttonTeamDelete.setFixedHeight(35)
+        self.buttonTeamDelete.setIcon(QPixmap("mull.png"))
+        self.buttonTeamDelete.clicked.connect(self.button_team_delete)
+        self.buttonTeamAdd = QPushButton("")
+        self.buttonTeamAdd.setFixedHeight(35)
+        self.buttonTeamAdd.setIcon(QPixmap("plus.png"))
+        self.buttonTeamAdd.clicked.connect(self.button_team_add)
+        grid.addWidget(self.buttonTeamPrev, 0, 0)
+        grid.addWidget(self.buttonTeamNext, 0, 1)
+        grid.addWidget(self.buttonTeamAdd, 0, 2)
+        grid.addWidget(self.buttonTeamDelete, 0, 3)
         form = QFormLayout()
 
-        self.buttonHeim = QPushButton()
-        self.buttonGast = QPushButton()
+        self.buttonTeamHome = QPushButton()
+        self.buttonTeamGuest = QPushButton()
         heimPixamp = QPixmap("../cck2_live/Logos/KSC_Frammersbach.jpg")
-        self.buttonHeim.setIcon(heimPixamp)
-        self.buttonHeim.setIconSize(QSize(100, 100))
+        self.buttonTeamHome.setIcon(heimPixamp)
+        self.buttonTeamHome.setIconSize(QSize(100, 100))
+        self.buttonTeamHome.clicked.connect(self.button_team_home)
         gastPixmap = QPixmap("../cck2_live/Logos/KSC_Groß-Zimmern.jpg")
-        self.buttonGast.setIcon(gastPixmap)
-        self.buttonGast.setIconSize(QSize(100, 100))
+        self.buttonTeamGuest.setIcon(gastPixmap)
+        self.buttonTeamGuest.setIconSize(QSize(100, 100))
+        self.buttonTeamGuest.clicked.connect(self.button_team_guest)
         self.spinNumPlayers = QSpinBox()
         self.spinNumSets = QSpinBox()
         self.checkPoints = QCheckBox()
-        form.addRow("Logo Heim", self.buttonHeim)
-        form.addRow("Logo Gast", self.buttonGast)
+        form.addRow("Logo Heim", self.buttonTeamHome)
+        form.addRow("Logo Gast", self.buttonTeamGuest)
         form.addRow("Anzahl Spieler", self.spinNumPlayers)
         form.addRow("Anzahl Sätze", self.spinNumSets)
         form.addRow("Satzpunkte", self.checkPoints)
@@ -87,22 +93,26 @@ class Widget(QWidget):
 
         boxWerbung = QGroupBox("Werbung")
         grid = QGridLayout(boxWerbung)
-        self.buttonLeftAdvert = QPushButton("")
-        self.buttonLeftAdvert.setFixedHeight(35)
-        self.buttonLeftAdvert.setIcon(QPixmap("winkel-links.png"))
-        self.buttonRightAdvert = QPushButton("")
-        self.buttonRightAdvert.setFixedHeight(35)
-        self.buttonRightAdvert.setIcon(QPixmap("winkel-rechts.png"))
-        self.buttonTrashAdvert = QPushButton("")
-        self.buttonTrashAdvert.setFixedHeight(35)
-        self.buttonTrashAdvert.setIcon(QPixmap("mull.png"))
-        self.buttonAddAdvert = QPushButton("")
-        self.buttonAddAdvert.setFixedHeight(35)
-        self.buttonAddAdvert.setIcon(QPixmap("plus.png"))
-        grid.addWidget(self.buttonLeftAdvert, 0, 0)
-        grid.addWidget(self.buttonRightAdvert, 0, 1)
-        grid.addWidget(self.buttonAddAdvert, 0, 2)
-        grid.addWidget(self.buttonTrashAdvert, 0, 3)
+        self.buttonAdvertizePrev = QPushButton("")
+        self.buttonAdvertizePrev.setFixedHeight(35)
+        self.buttonAdvertizePrev.setIcon(QPixmap("winkel-links.png"))
+        self.buttonAdvertizePrev.clicked.connect(self.button_advertize_prev)
+        self.buttonAdvertizeNext = QPushButton("")
+        self.buttonAdvertizeNext.setFixedHeight(35)
+        self.buttonAdvertizeNext.setIcon(QPixmap("winkel-rechts.png"))
+        self.buttonAdvertizeNext.clicked.connect(self.button_advertize_next)
+        self.buttonAdvertizeDelete = QPushButton("")
+        self.buttonAdvertizeDelete.setFixedHeight(35)
+        self.buttonAdvertizeDelete.setIcon(QPixmap("mull.png"))
+        self.buttonAdvertizeDelete.clicked.connect(self.button_advertize_delete)
+        self.buttonAdvertizeAdd = QPushButton("")
+        self.buttonAdvertizeAdd.setFixedHeight(35)
+        self.buttonAdvertizeAdd.setIcon(QPixmap("plus.png"))
+        self.buttonAdvertizeAdd.clicked.connect(self.button_advertize_add)
+        grid.addWidget(self.buttonAdvertizePrev, 0, 0)
+        grid.addWidget(self.buttonAdvertizeNext, 0, 1)
+        grid.addWidget(self.buttonAdvertizeAdd, 0, 2)
+        grid.addWidget(self.buttonAdvertizeDelete, 0, 3)
 
         self.buttonAdvertize = QPushButton()
         aPixmap = QPixmap("../cck2_live/Werbung/kc-lorsch.png")
@@ -110,6 +120,7 @@ class Widget(QWidget):
         self.buttonAdvertize.setIcon(aPixmap)
         self.buttonAdvertize.setIconSize(QSize(aSize, aSize))
         self.buttonAdvertize.setFixedHeight(110)
+        self.buttonAdvertize.clicked.connect(self.button_advertize)
         grid.addWidget(self.buttonAdvertize, 1, 0, 1, 4)
         
         form = QFormLayout()
@@ -124,8 +135,45 @@ class Widget(QWidget):
         vbox.addWidget(boxWerbung)
         
         self.buttonSave = QPushButton("Speichern")
+        self.buttonSave.clicked.connect(self.button_save)
         vbox.addWidget(self.buttonSave)
         self.setLayout(grid)
+
+    def button_team_prev(self):
+        print("button team previous")
+
+    def button_team_next(self):
+        print("button team next")
+
+    def button_team_add(self):
+        print("button team add")
+
+    def button_team_delete(self):
+        print("button team delete")
+
+    def button_team_home(self):
+        print("button team home")
+
+    def button_team_guest(self):
+        print("button team guest")
+
+    def button_advertize_prev(self):
+        print("button advertize previous")
+
+    def button_advertize_next(self):
+        print("button advertize next")
+
+    def button_advertize_add(self):
+        print("button advertize add")
+
+    def button_advertize_delete(self):
+        print("button advertize delete")
+
+    def button_advertize(self):
+        print("button advertize")
+
+    def button_save(self):
+        print("clicked save")
 
 if __name__ == "__main__":
     app = QApplication([])
