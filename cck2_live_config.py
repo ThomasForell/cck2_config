@@ -22,7 +22,7 @@ class Widget(QWidget):
         super(Widget, self).__init__()
         
         self.config = dict()
-        self.config["live_pfad"] = "."     # "./cck2_live"
+        self.config["live_path"] = "."     # "./cck2_live"
         self.config["tv"] = [["Livestream", "mannschaft_config.json"], ["TV Links", "tvlinks_config.json"], ["TV Rechts", "tvrechts_config.json"]]
 
         self.currentTeam = 0
@@ -32,14 +32,16 @@ class Widget(QWidget):
 
         self.data = []
         for tv in self.config["tv"]:
-            d = json.load(open(os.path.join(self.config["live_pfad"], tv[1]), "r")) 
+            d = json.load(open(os.path.join(self.config["live_path"], tv[1]), "r", encoding="utf-8")) 
             self.numTeams = max(self.numTeams, len(d["teams"]))
             self.numAdvertize = max(self.numAdvertize, len(d["werbung"]))
             self.data.append(d)
 
-        self.load_ui()
+        self.init_ui()
+        self.set_current_team_data()
+        self.set_current_advertize_data()
 
-    def load_ui(self):
+    def init_ui(self):
         vbox = QGridLayout(self)
 
         boxTeam = QGroupBox("Team")
@@ -48,10 +50,12 @@ class Widget(QWidget):
         self.buttonTeamPrev.setFixedHeight(35)
         self.buttonTeamPrev.setIcon(QPixmap("winkel-links.png"))
         self.buttonTeamPrev.clicked.connect(self.button_team_prev)
+        self.buttonTeamPrev.setDisabled(self.currentTeam == 0)
         self.buttonTeamNext = QPushButton("")
         self.buttonTeamNext.setFixedHeight(35)
         self.buttonTeamNext.setIcon(QPixmap("winkel-rechts.png"))
         self.buttonTeamNext.clicked.connect(self.button_team_next)
+        self.buttonTeamNext.setDisabled(self.currentTeam == self.numTeams - 1)
         self.buttonTeamDelete = QPushButton("")
         self.buttonTeamDelete.setFixedHeight(35)
         self.buttonTeamDelete.setIcon(QPixmap("mull.png"))
@@ -67,14 +71,8 @@ class Widget(QWidget):
         form = QFormLayout()
 
         self.buttonTeamHome = QPushButton()
-        self.buttonTeamGuest = QPushButton()
-        heimPixamp = QPixmap("../cck2_live/Logos/KSC_Frammersbach.jpg")
-        self.buttonTeamHome.setIcon(heimPixamp)
-        self.buttonTeamHome.setIconSize(QSize(100, 100))
         self.buttonTeamHome.clicked.connect(self.button_team_home)
-        gastPixmap = QPixmap("../cck2_live/Logos/KSC_Groß-Zimmern.jpg")
-        self.buttonTeamGuest.setIcon(gastPixmap)
-        self.buttonTeamGuest.setIconSize(QSize(100, 100))
+        self.buttonTeamGuest = QPushButton()
         self.buttonTeamGuest.clicked.connect(self.button_team_guest)
         self.spinNumPlayers = QSpinBox()
         self.spinNumSets = QSpinBox()
@@ -90,8 +88,8 @@ class Widget(QWidget):
             self.spinTimeTeam.append(QSpinBox())
             form.addRow("Anzeigedauer " + tv[0], self.spinTimeTeam[-1])
 
-        self.lineConfigTeam = QLineEdit("mannschaft1.json")
-        form.addRow("Data File", self.lineConfigTeam)
+        self.lineConfigTeam = QLineEdit("")
+        form.addRow("CCK2 Daten", self.lineConfigTeam)
 
         grid.addLayout(form, 1, 0, 1, 4)
         boxTeam.setLayout(grid)
@@ -146,11 +144,48 @@ class Widget(QWidget):
         vbox.addWidget(self.buttonSave)
         self.setLayout(grid)
 
+    def set_current_team_data(self):
+        team = self.data[0]["teams"][self.currentTeam]
+        
+        heimPixamp = QPixmap(os.path.join(self.config["live_path"], team["bild_heim"]))
+        self.buttonTeamHome.setIcon(heimPixamp)
+        self.buttonTeamHome.setIconSize(QSize(100, 100))
+        gastPixmap = QPixmap(QPixmap(os.path.join(self.config["live_path"], team["bild_gast"])))
+        self.buttonTeamGuest.setIcon(gastPixmap)
+        self.buttonTeamGuest.setIconSize(QSize(100, 100))
+
+        self.spinNumPlayers.setValue(team["anzahl_spieler"])
+        self.spinNumSets.setValue(team["anzahl_saetze"])
+        self.checkPoints.setChecked(team["satzpunkte_anzeigen"] == "ja")
+        self.lineConfigTeam.setText(team["token_datei"]) 
+        
+        for i in range(len(self.spinTimeTeam)):
+            self.spinTimeTeam[i].setValue(self.data[i]["teams"][self.currentTeam]["anzeigedauer_s"])   
+
+    def get_current_team_data(self):
+        pass
+
+    def set_current_advertize_data(self):
+        pass
+
+    def get_current_advertize_data(self):
+        pass
+
     def button_team_prev(self):
         print("button team previous")
+        self.get_current_team_data()
+        self.currentTeam -= 1
+        self.set_current_team_data()
+        self.buttonTeamPrev.setDisabled(self.currentTeam == 0)
+        self.buttonTeamNext.setDisabled(self.currentTeam == self.numTeams - 1)
 
     def button_team_next(self):
         print("button team next")
+        self.get_current_team_data()
+        self.currentTeam += 1
+        self.set_current_team_data()
+        self.buttonTeamPrev.setDisabled(self.currentTeam == 0)
+        self.buttonTeamNext.setDisabled(self.currentTeam == self.numTeams - 1)
 
     def button_team_add(self):
         print("button team add")
@@ -160,7 +195,7 @@ class Widget(QWidget):
 
     def button_team_home(self):
         print("button team home")
-        filename = QFileDialog.getOpenFileName(self, "Logo Heim-Team", os.path.join(self.config["live_pfad"], "Logos"), "Bilder (*.png *.jpg)")[0]
+        filename = QFileDialog.getOpenFileName(self, "Logo Heim-Team", os.path.join(self.config["live_path"], "Logos"), "Bilder (*.png *.jpg)")[0]
         if filename:
             pixmap = QPixmap(filename)
             if pixmap:
@@ -171,7 +206,7 @@ class Widget(QWidget):
 
     def button_team_guest(self):
         print("button team guest")
-        filename = QFileDialog.getOpenFileName(self, "Logo Gäste-Team", os.path.join(self.config["live_pfad"], "Logos"), "Bilder (*.png *.jpg)")[0]
+        filename = QFileDialog.getOpenFileName(self, "Logo Gäste-Team", os.path.join(self.config["live_path"], "Logos"), "Bilder (*.png *.jpg)")[0]
         if filename:
             pixmap = QPixmap(filename)
             if pixmap:
@@ -198,7 +233,7 @@ class Widget(QWidget):
 
     def button_advertize(self):
         print("button advertize")
-        filename = QFileDialog.getOpenFileName(self, "Werbung", os.path.join(self.config["live_pfad"], "Werbung"), "Bilder (*.png *.jpg)")[0]
+        filename = QFileDialog.getOpenFileName(self, "Werbung", os.path.join(self.config["live_path"], "Werbung"), "Bilder (*.png *.jpg)")[0]
         if filename:     
             pixmap = QPixmap(filename)
             if pixmap:
