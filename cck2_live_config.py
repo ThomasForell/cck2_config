@@ -163,7 +163,19 @@ class Widget(QWidget):
             self.spinTimeTeam[i].setValue(self.data[i]["teams"][self.currentTeam]["anzeigedauer_s"])   
 
     def get_current_team_data(self):
-        pass
+        team = self.data[0]["teams"][self.currentTeam]
+        
+        # logos have already been stored
+        team["anzahl_spieler"] = self.spinNumPlayers.value()
+        team["anzahl_saetze"] = self.spinNumSets.value()
+        if self.checkPoints.isChecked():
+            team["satzpunkte_anzeigen"] = "ja"
+        else:
+            team["satzpunkte_anzeigen"] = "nein"
+        team["token_datei"] = self.lineConfigTeam.text() 
+        
+        for i in range(len(self.spinTimeTeam)):
+            self.data[i]["teams"][self.currentTeam]["anzeigedauer_s"] = self.spinTimeTeam[i].value()   
 
     def set_current_advertize_data(self):
         pass
