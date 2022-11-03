@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 import json
 
-from PySide2.QtWidgets import QApplication, QWidget, QGridLayout, QFormLayout, QSpinBox, QLineEdit, QCheckBox, QPushButton, QGroupBox, QFileDialog
+from PySide2.QtWidgets import QApplication, QWidget, QGridLayout, QFormLayout, QHBoxLayout, QSpinBox, QLineEdit, QCheckBox, QPushButton, QGroupBox, QRadioButton, QFileDialog, QButtonGroup
 from PySide2.QtCore import QSize
 from PySide2.QtGui import QPixmap
 
@@ -79,8 +79,27 @@ class Widget(QWidget):
         self.checkPoints = QCheckBox()
         form.addRow("Logo Heim", self.buttonTeamHome)
         form.addRow("Logo Gast", self.buttonTeamGuest)
-        form.addRow("Anzahl Spieler", self.spinNumPlayers)
-        form.addRow("Anzahl Sätze", self.spinNumSets)
+
+        hBoxLayout = QHBoxLayout()
+        group = QButtonGroup(hBoxLayout)
+        self.radioTeamNumPlayers4 = QRadioButton("4")
+        self.radioTeamNumPlayers6 = QRadioButton("6")
+        group.addButton(self.radioTeamNumPlayers4)
+        group.addButton(self.radioTeamNumPlayers6)
+        hBoxLayout.addWidget(self.radioTeamNumPlayers4)
+        hBoxLayout.addWidget(self.radioTeamNumPlayers6)
+        form.addRow("Anzahl Spieler", hBoxLayout)
+
+        hBoxLayout = QHBoxLayout()
+        group = QButtonGroup(hBoxLayout)
+        self.radioTeamNumSets2 = QRadioButton("2")
+        self.radioTeamNumSets4 = QRadioButton("4")
+        group.addButton(self.radioTeamNumSets2)
+        group.addButton(self.radioTeamNumSets4)
+        hBoxLayout.addWidget(self.radioTeamNumSets2)
+        hBoxLayout.addWidget(self.radioTeamNumSets4)
+        form.addRow("Anzahl Sätze", hBoxLayout)
+        
         form.addRow("Satzpunkte", self.checkPoints)
 
         self.spinTimeTeam = []
@@ -102,10 +121,12 @@ class Widget(QWidget):
         self.buttonAdvertizePrev.setFixedHeight(35)
         self.buttonAdvertizePrev.setIcon(QPixmap("winkel-links.png"))
         self.buttonAdvertizePrev.clicked.connect(self.button_advertize_prev)
+        self.buttonAdvertizePrev.setDisabled(self.currentAdvertize == 0)
         self.buttonAdvertizeNext = QPushButton("")
         self.buttonAdvertizeNext.setFixedHeight(35)
         self.buttonAdvertizeNext.setIcon(QPixmap("winkel-rechts.png"))
         self.buttonAdvertizeNext.clicked.connect(self.button_advertize_next)
+        self.buttonAdvertizeNext.setDisabled(self.currentAdvertize == self.numAdvertize - 1)
         self.buttonAdvertizeDelete = QPushButton("")
         self.buttonAdvertizeDelete.setFixedHeight(35)
         self.buttonAdvertizeDelete.setIcon(QPixmap("mull.png"))
@@ -154,8 +175,14 @@ class Widget(QWidget):
         self.buttonTeamGuest.setIcon(gastPixmap)
         self.buttonTeamGuest.setIconSize(QSize(100, 100))
 
-        self.spinNumPlayers.setValue(team["anzahl_spieler"])
-        self.spinNumSets.setValue(team["anzahl_saetze"])
+        if team["anzahl_spieler"] == 4:
+            self.radioTeamNumPlayers4.setChecked(True)
+        else:
+            self.radioTeamNumPlayers6.setChecked(True)
+        if team["anzahl_saetze"] == 2:
+            self.radioTeamNumSets2.setChecked(True)
+        else:
+            self.radioTeamNumSets4.setChecked(True)
         self.checkPoints.setChecked(team["satzpunkte_anzeigen"] == "ja")
         self.lineConfigTeam.setText(team["token_datei"]) 
         
@@ -166,8 +193,15 @@ class Widget(QWidget):
         team = self.data[0]["teams"][self.currentTeam]
         
         # logos have already been stored
-        team["anzahl_spieler"] = self.spinNumPlayers.value()
-        team["anzahl_saetze"] = self.spinNumSets.value()
+        if self.radioTeamNumPlayers4.isChecked():
+            team["anzahl_spieler"] = 4
+        else:
+            team["anzahl_spieler"] = 6
+        if self.radioTeamNumSets2.isChecked():
+            team["anzahl_saetze"] = 2
+        else:
+            team["anzahl_saetze"] = 4
+        
         if self.checkPoints.isChecked():
             team["satzpunkte_anzeigen"] = "ja"
         else:
@@ -231,11 +265,15 @@ class Widget(QWidget):
         print("button advertize previous")
         if self.currentAdvertize > 0:
             self.currentAdvertize -= 1
+        self.buttonAdvertizePrev.setDisabled(self.currentAdvertize == 0)
+        self.buttonAdvertizeNext.setDisabled(self.currentAdvertize == self.numAdvertize - 1)
 
     def button_advertize_next(self):
         print("button advertize next")
         if self.currentAdvertize < self.numAdvertize:
             self.currentAdvertize += 1
+        self.buttonAdvertizePrev.setDisabled(self.currentAdvertize == 0)
+        self.buttonAdvertizeNext.setDisabled(self.currentAdvertize == self.numAdvertize - 1)
 
     def button_advertize_add(self):
         print("button advertize add")
