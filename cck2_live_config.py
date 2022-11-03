@@ -102,10 +102,11 @@ class Widget(QWidget):
         
         form.addRow("Satzpunkte", self.checkPoints)
 
-        self.spinTimeTeam = []
+        self.spinTeamTime = []
         for tv in self.config["tv"]:
-            self.spinTimeTeam.append(QSpinBox())
-            form.addRow("Anzeigedauer " + tv[0], self.spinTimeTeam[-1])
+            self.spinTeamTime.append(QSpinBox())
+            self.spinTeamTime[-1].setMinimum(0)
+            form.addRow("Anzeigedauer " + tv[0], self.spinTeamTime[-1])
 
         self.lineConfigTeam = QLineEdit("")
         form.addRow("CCK2 Daten", self.lineConfigTeam)
@@ -150,10 +151,11 @@ class Widget(QWidget):
         grid.addWidget(self.buttonAdvertize, 1, 0, 1, 4)
         
         form = QFormLayout()
-        self.spinTimeAdvert = []
+        self.spinAdvertTime = []
         for tv in self.config["tv"]:
-            self.spinTimeAdvert.append(QSpinBox())
-            form.addRow("Anzeigedauer " + tv[0], self.spinTimeAdvert[-1])
+            self.spinAdvertTime.append(QSpinBox())
+            self.spinAdvertTime[-1].setMinimum(0)
+            form.addRow("Anzeigedauer " + tv[0], self.spinAdvertTime[-1])
 
         grid.addLayout(form, 2, 0, 1, 4)
         boxWerbung.setLayout(grid)
@@ -186,8 +188,8 @@ class Widget(QWidget):
         self.checkPoints.setChecked(team["satzpunkte_anzeigen"] == "ja")
         self.lineConfigTeam.setText(team["token_datei"]) 
         
-        for i in range(len(self.spinTimeTeam)):
-            self.spinTimeTeam[i].setValue(self.data[i]["teams"][self.currentTeam]["anzeigedauer_s"])   
+        for i in range(len(self.spinTeamTime)):
+            self.spinTeamTime[i].setValue(self.data[i]["teams"][self.currentTeam]["anzeigedauer_s"])   
 
     def get_current_team_data(self):
         team = self.data[0]["teams"][self.currentTeam]
@@ -208,14 +210,22 @@ class Widget(QWidget):
             team["satzpunkte_anzeigen"] = "nein"
         team["token_datei"] = self.lineConfigTeam.text() 
         
-        for i in range(len(self.spinTimeTeam)):
-            self.data[i]["teams"][self.currentTeam]["anzeigedauer_s"] = self.spinTimeTeam[i].value()   
+        for i in range(len(self.spinTeamTime)):
+            self.data[i]["teams"][self.currentTeam]["anzeigedauer_s"] = self.spinTeamTime[i].value()   
 
     def set_current_advertize_data(self):
-        pass
+        pixmap = QPixmap(self.data[0]["werbung"][self.currentAdvertize]["bild"])
+        if pixmap:
+            aSize = getIconSize100(pixmap)
+            self.buttonAdvertize.setIcon(pixmap)
+            self.buttonAdvertize.setIconSize(QSize(aSize, aSize))
+
+        for i in range(len(self.spinAdvertTime)):
+            self.spinAdvertTime[i].setValue(self.data[i]["werbung"][self.currentAdvertize]["anzeigedauer_s"])
 
     def get_current_advertize_data(self):
-        pass
+        for i in range(len(self.spinAdvertTime)):
+            self.data[i]["werbung"][self.currentAdvertize]["anzeigedauer_s"] = self.spinAdvertTime[i].value()
 
     def button_team_prev(self):
         print("button team previous")
@@ -263,15 +273,19 @@ class Widget(QWidget):
 
     def button_advertize_prev(self):
         print("button advertize previous")
+        self.get_current_advertize_data()
         if self.currentAdvertize > 0:
             self.currentAdvertize -= 1
+        self.set_current_advertize_data()
         self.buttonAdvertizePrev.setDisabled(self.currentAdvertize == 0)
         self.buttonAdvertizeNext.setDisabled(self.currentAdvertize == self.numAdvertize - 1)
 
     def button_advertize_next(self):
         print("button advertize next")
+        self.get_current_advertize_data()
         if self.currentAdvertize < self.numAdvertize:
             self.currentAdvertize += 1
+        self.set_current_advertize_data()
         self.buttonAdvertizePrev.setDisabled(self.currentAdvertize == 0)
         self.buttonAdvertizeNext.setDisabled(self.currentAdvertize == self.numAdvertize - 1)
 
