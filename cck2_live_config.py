@@ -256,8 +256,9 @@ class Widget(QWidget):
             if pixmap:
                 self.buttonTeamHome.setIcon(pixmap)
                 self.buttonTeamHome.setIconSize(QSize(100, 100))
+                relativePath = self.live_path(filename)
                 for d in self.data:
-                    d["teams"][self.currentTeam]["bild_heim"] = filename
+                    d["teams"][self.currentTeam]["bild_heim"] = relativePath
 
     def button_team_guest(self):
         print("button team guest")
@@ -267,8 +268,9 @@ class Widget(QWidget):
             if pixmap:
                 self.buttonTeamGuest.setIcon(pixmap)
                 self.buttonTeamGuest.setIconSize(QSize(100, 100))
+                relativePath = self.live_path(filename)
                 for d in self.data:
-                    d["teams"][self.currentTeam]["bild_gast"] = filename
+                    d["teams"][self.currentTeam]["bild_gast"] = relativePath
 
     def button_advertize_prev(self):
         print("button advertize previous")
@@ -303,14 +305,24 @@ class Widget(QWidget):
                 aSize = getIconSize100(pixmap)
                 self.buttonAdvertize.setIcon(pixmap)
                 self.buttonAdvertize.setIconSize(QSize(aSize, aSize))
+                relativePath = self.live_path(filename)
                 for d in self.data:
-                    d["werbung"][self.currentAdvertize]["bild"] = filename
+                    d["werbung"][self.currentAdvertize]["bild"] = relativePath
 
     def button_save(self):
         print("clicked save")
         for i, tv in enumerate(self.config["tv"]):
             fp = open(os.path.join(self.config["live_path"], tv[1] + ".test" ), "w", encoding="utf-8")
             json.dump(self.data[i], fp, indent=4, ensure_ascii=False) 
+
+    def live_path(self, userFilename):
+        live = self.config["live_path"]
+        liveAbs = os.path.abspath(live)
+        userAbs = os.path.abspath(userFilename)
+        common = os.path.commonpath([liveAbs, userAbs])
+        path = userAbs[len(liveAbs) + 1:]
+        path = path.replace("\\", "/")
+        return path 
 
 if __name__ == "__main__":
     app = QApplication([])
