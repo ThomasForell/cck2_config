@@ -1,6 +1,5 @@
 # This Python file uses the following encoding: utf-8
 import os
-from pathlib import Path
 import sys
 import json
 
@@ -188,8 +187,8 @@ class Widget(QWidget):
         self.checkPoints.setChecked(team["satzpunkte_anzeigen"] == "ja")
         self.lineConfigTeam.setText(team["token_datei"]) 
         
-        for i in range(len(self.spinTeamTime)):
-            self.spinTeamTime[i].setValue(self.data[i]["teams"][self.currentTeam]["anzeigedauer_s"])   
+        for i, spin in enumerate(self.spinTeamTime):
+            spin.setValue(self.data[i]["teams"][self.currentTeam]["anzeigedauer_s"])   
 
     def get_current_team_data(self):
         team = self.data[0]["teams"][self.currentTeam]
@@ -210,8 +209,8 @@ class Widget(QWidget):
             team["satzpunkte_anzeigen"] = "nein"
         team["token_datei"] = self.lineConfigTeam.text() 
         
-        for i in range(len(self.spinTeamTime)):
-            self.data[i]["teams"][self.currentTeam]["anzeigedauer_s"] = self.spinTeamTime[i].value()   
+        for i, spin in enumerate(self.spinTeamTime):
+            self.data[i]["teams"][self.currentTeam]["anzeigedauer_s"] = spin.value()   
 
     def set_current_advertize_data(self):
         pixmap = QPixmap(self.data[0]["werbung"][self.currentAdvertize]["bild"])
@@ -220,12 +219,12 @@ class Widget(QWidget):
             self.buttonAdvertize.setIcon(pixmap)
             self.buttonAdvertize.setIconSize(QSize(aSize, aSize))
 
-        for i in range(len(self.spinAdvertTime)):
-            self.spinAdvertTime[i].setValue(self.data[i]["werbung"][self.currentAdvertize]["anzeigedauer_s"])
+        for i, spin in enumerate(self.spinAdvertTime):
+            spin.setValue(self.data[i]["werbung"][self.currentAdvertize]["anzeigedauer_s"])
 
     def get_current_advertize_data(self):
-        for i in range(len(self.spinAdvertTime)):
-            self.data[i]["werbung"][self.currentAdvertize]["anzeigedauer_s"] = self.spinAdvertTime[i].value()
+        for i, spin in enumerate(self.spinAdvertTime):
+            self.data[i]["werbung"][self.currentAdvertize]["anzeigedauer_s"] = spin.value()
 
     def button_team_prev(self):
         print("button team previous")
@@ -309,6 +308,9 @@ class Widget(QWidget):
 
     def button_save(self):
         print("clicked save")
+        for i, tv in enumerate(self.config["tv"]):
+            fp = open(os.path.join(self.config["live_path"], tv[1] + ".test" ), "w", encoding="utf-8")
+            json.dump(self.data[i], fp, indent=4, ensure_ascii=False) 
 
 if __name__ == "__main__":
     app = QApplication([])
