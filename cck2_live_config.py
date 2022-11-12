@@ -312,7 +312,7 @@ class Widget(QWidget):
     def button_save(self):
         print("clicked save")
         for i, tv in enumerate(self.config["tv"]):
-            fp = open(os.path.join(self.config["live_path"], tv[1] + ".test" ), "w", encoding="utf-8")
+            fp = open(os.path.join(self.config["live_path"], tv[1]), "w", encoding="utf-8")
             json.dump(self.data[i], fp, indent=4, ensure_ascii=False) 
 
     def live_path(self, userFilename):
