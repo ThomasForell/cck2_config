@@ -245,8 +245,41 @@ class Widget(QWidget):
     def button_team_add(self):
         print("button team add")
 
+        self.get_current_team_data()
+
+        for d in self.data:
+            team = dict()
+            team["bild_heim"] = ""
+            team["bild_gast"] = ""
+            team["anzahl_spieler"] = 6
+            team["anzahl_saetze"] = 4
+            team["satzpunkte_anzeigen"] = "ja"
+            team["token_datei"] = "mannschaft.json" 
+            team["anzeigedauer_s"] = 0   
+            d["teams"].insert(self.currentTeam, team)
+
+        self.numTeams += 1        
+        self.set_current_team_data()
+
+        self.buttonTeamPrev.setDisabled(self.currentTeam == 0)
+        self.buttonTeamNext.setDisabled(self.currentTeam == self.numTeams - 1)
+        self.buttonTeamDelete.setDisabled(self.numTeams == 1)
+
+
     def button_team_delete(self):
         print("button team delete")
+
+        for d in self.data:
+            d["teams"].pop(self.currentTeam)
+
+        self.numTeams -= 1
+        self.currentTeam = min(self.numTeams - 1, self.currentTeam)
+
+        self.set_current_team_data()
+        self.buttonTeamPrev.setDisabled(self.currentTeam == 0)
+        self.buttonTeamNext.setDisabled(self.currentTeam == self.numTeams - 1)
+        self.buttonTeamDelete.setDisabled(self.numTeams == 1)
+
 
     def button_team_home(self):
         print("button team home")
