@@ -214,9 +214,9 @@ class Widget(QWidget):
 
     def set_current_advertize_data(self):
         pixmap = QPixmap(self.data[0]["werbung"][self.currentAdvertize]["bild"])
+        self.buttonAdvertize.setIcon(pixmap)
         if pixmap:
             aSize = getIconSize100(pixmap)
-            self.buttonAdvertize.setIcon(pixmap)
             self.buttonAdvertize.setIconSize(QSize(aSize, aSize))
 
         for i, spin in enumerate(self.spinAdvertTime):
@@ -326,8 +326,35 @@ class Widget(QWidget):
     def button_advertize_add(self):
         print("button advertize add")
 
+        self.get_current_advertize_data()
+
+        for d in self.data:
+            adv = dict()
+            adv["bild"] = ""
+            adv["anzeigedauer_s"] = 0   
+            d["werbung"].insert(self.currentAdvertize, adv)
+
+        self.numAdvertize += 1        
+        self.set_current_advertize_data()
+
+        self.buttonAdvertizePrev.setDisabled(self.currentAdvertize == 0)
+        self.buttonAdvertizeNext.setDisabled(self.currentAdvertize == self.numAdvertize - 1)
+        self.buttonAdvertizeDelete.setDisabled(self.numAdvertize == 1)
+
+
     def button_advertize_delete(self):
         print("button advertize delete")
+
+        for d in self.data:
+            d["werbung"].pop(self.currentAdvertize)
+
+        self.numAdvertize -= 1
+        self.currentAdvertize = min(self.numAdvertize - 1, self.currentAdvertize)
+
+        self.set_current_advertize_data()
+        self.buttonAdvertizePrev.setDisabled(self.currentAdvertize == 0)
+        self.buttonAdvertizeNext.setDisabled(self.currentAdvertize == self.numAdvertize - 1)
+        self.buttonAdvertizeDelete.setDisabled(self.numAdvertize == 1)
 
     def button_advertize(self):
         print("button advertize")
@@ -344,6 +371,8 @@ class Widget(QWidget):
 
     def button_save(self):
         print("clicked save")
+        self.get_current_team_data()
+        self.get_current_advertize_data()
         for i, tv in enumerate(self.config["tv"]):
             fp = open(os.path.join(self.config["live_path"], tv[1]), "w", encoding="utf-8")
             json.dump(self.data[i], fp, indent=4, ensure_ascii=False) 
