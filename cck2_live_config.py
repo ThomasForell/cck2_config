@@ -107,8 +107,10 @@ class Widget(QWidget):
             self.spinTeamTime[-1].setMinimum(0)
             form.addRow("Anzeigedauer " + tv[0], self.spinTeamTime[-1])
 
-        self.lineConfigTeam = QLineEdit("")
-        form.addRow("CCK2 Daten", self.lineConfigTeam)
+        self.lineDataTeam = QLineEdit("")
+        form.addRow("CCK2 Daten Team", self.lineDataTeam)
+        self.lineDataLane = QLineEdit("")
+        form.addRow("CCK2 Daten Bahn", self.lineDataLane)
 
         grid.addLayout(form, 1, 0, 1, 4)
         boxTeam.setLayout(grid)
@@ -185,7 +187,8 @@ class Widget(QWidget):
         else:
             self.radioTeamNumSets4.setChecked(True)
         self.checkPoints.setChecked(team["satzpunkte_anzeigen"] == "ja")
-        self.lineConfigTeam.setText(team["token_datei"]) 
+        self.lineDataTeam.setText(team["token_datei"]) 
+        self.lineDataLane.setText(team.get("token_bahn", ""))
         
         for i, spin in enumerate(self.spinTeamTime):
             spin.setValue(self.data[i]["teams"][self.currentTeam]["anzeigedauer_s"])   
@@ -207,8 +210,9 @@ class Widget(QWidget):
             team["satzpunkte_anzeigen"] = "ja"
         else:
             team["satzpunkte_anzeigen"] = "nein"
-        team["token_datei"] = self.lineConfigTeam.text() 
-        
+        team["token_datei"] = self.lineDataTeam.text() 
+        team["token_bahn"] = self.lineDataLane.text()
+
         for i, spin in enumerate(self.spinTeamTime):
             self.data[i]["teams"][self.currentTeam]["anzeigedauer_s"] = spin.value()   
 
@@ -254,7 +258,8 @@ class Widget(QWidget):
             team["anzahl_spieler"] = 6
             team["anzahl_saetze"] = 4
             team["satzpunkte_anzeigen"] = "ja"
-            team["token_datei"] = "mannschaft.json" 
+            team["token_datei"] = "mannschaft.json"
+            team["token_bahn"] = "" 
             team["anzeigedauer_s"] = 0   
             d["teams"].insert(self.currentTeam, team)
 
