@@ -194,24 +194,25 @@ class Widget(QWidget):
             spin.setValue(self.data[i]["teams"][self.currentTeam]["anzeigedauer_s"])   
 
     def get_current_team_data(self):
-        team = self.data[0]["teams"][self.currentTeam]
-        
-        # logos have already been stored
-        if self.radioTeamNumPlayers4.isChecked():
-            team["anzahl_spieler"] = 4
-        else:
-            team["anzahl_spieler"] = 6
-        if self.radioTeamNumSets2.isChecked():
-            team["anzahl_saetze"] = 2
-        else:
-            team["anzahl_saetze"] = 4
-        
-        if self.checkPoints.isChecked():
-            team["satzpunkte_anzeigen"] = "ja"
-        else:
-            team["satzpunkte_anzeigen"] = "nein"
-        team["token_datei"] = self.lineDataTeam.text() 
-        team["token_bahn"] = self.lineDataLane.text()
+        for d in self.data:
+            team = d["teams"][self.currentTeam]
+            
+            # logos have already been stored
+            if self.radioTeamNumPlayers4.isChecked():
+                team["anzahl_spieler"] = 4
+            else:
+                team["anzahl_spieler"] = 6
+            if self.radioTeamNumSets2.isChecked():
+                team["anzahl_saetze"] = 2
+            else:
+                team["anzahl_saetze"] = 4
+            
+            if self.checkPoints.isChecked():
+                team["satzpunkte_anzeigen"] = "ja"
+            else:
+                team["satzpunkte_anzeigen"] = "nein"
+            team["token_datei"] = self.lineDataTeam.text() 
+            team["token_bahn"] = self.lineDataLane.text()
 
         for i, spin in enumerate(self.spinTeamTime):
             self.data[i]["teams"][self.currentTeam]["anzeigedauer_s"] = spin.value()   
