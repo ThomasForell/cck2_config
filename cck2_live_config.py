@@ -112,6 +112,16 @@ class Widget(QWidget):
         self.lineDataLane = QLineEdit("")
         form.addRow("CCK2 Daten Bahn", self.lineDataLane)
 
+        hBoxLayout = QHBoxLayout()
+        group = QButtonGroup(hBoxLayout)
+        self.radioTeamNumLanes4 = QRadioButton("4")
+        self.radioTeamNumLanes6 = QRadioButton("6")
+        group.addButton(self.radioTeamNumLanes4)
+        group.addButton(self.radioTeamNumLanes6)
+        hBoxLayout.addWidget(self.radioTeamNumLanes4)
+        hBoxLayout.addWidget(self.radioTeamNumLanes6)
+        form.addRow("Anzahl Bahnen", hBoxLayout)
+
         grid.addLayout(form, 1, 0, 1, 4)
         boxTeam.setLayout(grid)
 
@@ -189,7 +199,11 @@ class Widget(QWidget):
         self.checkPoints.setChecked(team["satzpunkte_anzeigen"] == "ja")
         self.lineDataTeam.setText(team["token_datei"]) 
         self.lineDataLane.setText(team.get("token_bahn", ""))
-        
+        if team.get("anzahl_bahnen", 4) == 4:
+            self.radioTeamNumLanes4.setChecked(True)
+        else:
+            self.radioTeamNumLanes6.setChecked(True)
+
         for i, spin in enumerate(self.spinTeamTime):
             spin.setValue(self.data[i]["teams"][self.currentTeam]["anzeigedauer_s"])   
 
@@ -213,6 +227,10 @@ class Widget(QWidget):
                 team["satzpunkte_anzeigen"] = "nein"
             team["token_datei"] = self.lineDataTeam.text() 
             team["token_bahn"] = self.lineDataLane.text()
+            if self.radioTeamNumLanes4.isChecked():
+                team["anzahl_bahnen"] = 4
+            else:
+                team["anzahl_bahnen"] = 6
 
         for i, spin in enumerate(self.spinTeamTime):
             self.data[i]["teams"][self.currentTeam]["anzeigedauer_s"] = spin.value()   
