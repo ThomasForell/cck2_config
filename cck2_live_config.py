@@ -232,7 +232,7 @@ class Widget(QWidget):
             self.data[i]["teams"][self.currentTeam]["anzeigedauer_s"] = spin.value()   
 
     def set_current_advertize_data(self):
-        pixmap = QPixmap(self.data[0]["werbung"][self.currentAdvertize]["bild"])
+        pixmap = QPixmap(os.path.join(self.config["live_path"], self.data[0]["werbung"][self.currentAdvertize]["bild"]))
         self.buttonAdvertize.setIcon(pixmap)
         if pixmap:
             aSize = getIconSize100(pixmap)
