@@ -21,7 +21,7 @@ class Widget(QWidget):
         super(Widget, self).__init__()
         
         self.config = dict()
-        self.config["live_path"] = "."     # "./cck2_live"
+        self.config["live_path"] = "../"     # "./cck2_live"
         self.config["tv"] = [["Livestream", "mannschaft_config.json"], ["TV Links", "tvlinks_config.json"], ["TV Rechts", "tvrechts_config.json"]]
 
         self.currentTeam = 0
@@ -152,11 +152,7 @@ class Widget(QWidget):
         grid.addWidget(self.buttonAdvertizeAdd, 0, 2)
         grid.addWidget(self.buttonAdvertizeDelete, 0, 3)
 
-        self.buttonAdvertize = QPushButton()
-        aPixmap = QPixmap("../cck2_live/Werbung/kc-lorsch.png")
-        aSize = getIconSize100(aPixmap)
-        self.buttonAdvertize.setIcon(aPixmap)
-        self.buttonAdvertize.setIconSize(QSize(aSize, aSize))
+        self.buttonAdvertize = QPushButton("")
         self.buttonAdvertize.setFixedHeight(110)
         self.buttonAdvertize.clicked.connect(self.button_advertize)
         grid.addWidget(self.buttonAdvertize, 1, 0, 1, 4)
