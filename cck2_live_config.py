@@ -41,7 +41,7 @@ class Widget(QWidget):
         self.set_current_advertize_data()
 
     def init_ui(self):
-        vbox = QGridLayout(self)
+        mainGridLayout = QGridLayout(self)
 
         boxTeam = QGroupBox("Team")
         grid = QGridLayout(boxTeam)
@@ -125,7 +125,7 @@ class Widget(QWidget):
         grid.addLayout(form, 1, 0, 1, 4)
         boxTeam.setLayout(grid)
 
-        vbox.addWidget(boxTeam)
+        mainGridLayout.addWidget(boxTeam, 0, 0, 1, 1)
 
         boxWerbung = QGroupBox("Werbung")
         grid = QGridLayout(boxWerbung)
@@ -167,11 +167,11 @@ class Widget(QWidget):
         grid.addLayout(form, 2, 0, 1, 4)
         boxWerbung.setLayout(grid)
 
-        vbox.addWidget(boxWerbung)
+        mainGridLayout.addWidget(boxWerbung, 0, 1, 1, 1)
         
         self.buttonSave = QPushButton("Speichern")
         self.buttonSave.clicked.connect(self.button_save)
-        vbox.addWidget(self.buttonSave)
+        mainGridLayout.addWidget(self.buttonSave, 1, 0, 1, 2)
         self.setLayout(grid)
 
     def set_current_team_data(self):
