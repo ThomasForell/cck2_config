@@ -20,6 +20,8 @@ class Widget(QWidget):
     def __init__(self):
         super(Widget, self).__init__()
         
+        self.setWindowTitle("Livestream + TV Konfigurator")
+
         self.config = dict()
         self.config["live_path"] = "../"     # "./cck2_live"
         self.config["tv"] = [["Livestream", "mannschaft_config.json"], ["TV Links", "tvlinks_config.json"], ["TV Rechts", "tvrechts_config.json"]]
@@ -407,7 +409,7 @@ class Widget(QWidget):
         return path 
 
 if __name__ == "__main__":
-    app = QApplication([])
+    app = QApplication(sys.argv)
     widget = Widget()
     widget.show()
     sys.exit(app.exec_())
