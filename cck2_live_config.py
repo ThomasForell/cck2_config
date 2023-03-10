@@ -16,6 +16,24 @@ def getIconSize100(pixmap):
         aSize = size.width() / size.height() * 100
     return aSize
 
+def create_team_dict():
+    team = dict()
+    team["bild_heim"] = ""
+    team["bild_gast"] = ""
+    team["anzahl_spieler"] = 6
+    team["anzahl_saetze"] = 4
+    team["satzpunkte_anzeigen"] = "ja"
+    team["token_datei"] = "mannschaft.json"
+    team["token_bahn"] = "" 
+    team["anzeigedauer_s"] = 0   
+    return team
+
+def create_advertize_dict():
+    adv = dict()
+    adv["bild"] = ""
+    adv["anzeigedauer_s"] = 0
+    return adv
+
 class Widget(QWidget):
     def __init__(self):
         super(Widget, self).__init__()
@@ -33,7 +51,11 @@ class Widget(QWidget):
 
         self.data = []
         for tv in self.config["tv"]:
-            d = json.load(open(os.path.join(self.config["live_path"], tv[1]), "r", encoding="utf-8")) 
+            try:
+                path = os.path.join(self.config["live_path"], tv[1])
+                d = json.load(open(path, "r", encoding="utf-8")) 
+            except FileNotFoundError as e:
+                d = {"teams": [create_team_dict()],  "werbung": [create_advertize_dict()]}
             self.numTeams = max(self.numTeams, len(d["teams"]))
             self.numAdvertize = max(self.numAdvertize, len(d["werbung"]))
             self.data.append(d)
@@ -51,12 +73,10 @@ class Widget(QWidget):
         self.buttonTeamPrev.setFixedHeight(35)
         self.buttonTeamPrev.setIcon(QPixmap("winkel-links.png"))
         self.buttonTeamPrev.clicked.connect(self.button_team_prev)
-        self.buttonTeamPrev.setDisabled(self.currentTeam == 0)
         self.buttonTeamNext = QPushButton("")
         self.buttonTeamNext.setFixedHeight(35)
         self.buttonTeamNext.setIcon(QPixmap("winkel-rechts.png"))
         self.buttonTeamNext.clicked.connect(self.button_team_next)
-        self.buttonTeamNext.setDisabled(self.currentTeam == self.numTeams - 1)
         self.buttonTeamDelete = QPushButton("")
         self.buttonTeamDelete.setFixedHeight(35)
         self.buttonTeamDelete.setIcon(QPixmap("mull.png"))
@@ -135,12 +155,10 @@ class Widget(QWidget):
         self.buttonAdvertizePrev.setFixedHeight(35)
         self.buttonAdvertizePrev.setIcon(QPixmap("winkel-links.png"))
         self.buttonAdvertizePrev.clicked.connect(self.button_advertize_prev)
-        self.buttonAdvertizePrev.setDisabled(self.currentAdvertize == 0)
         self.buttonAdvertizeNext = QPushButton("")
         self.buttonAdvertizeNext.setFixedHeight(35)
         self.buttonAdvertizeNext.setIcon(QPixmap("winkel-rechts.png"))
         self.buttonAdvertizeNext.clicked.connect(self.button_advertize_next)
-        self.buttonAdvertizeNext.setDisabled(self.currentAdvertize == self.numAdvertize - 1)
         self.buttonAdvertizeDelete = QPushButton("")
         self.buttonAdvertizeDelete.setFixedHeight(35)
         self.buttonAdvertizeDelete.setIcon(QPixmap("mull.png"))
@@ -175,6 +193,21 @@ class Widget(QWidget):
         self.buttonSave.clicked.connect(self.button_save)
         mainGridLayout.addWidget(self.buttonSave, 1, 0, 1, 2)
         self.setLayout(grid)
+
+        self.update_team_button_state()
+        self.update_advertize_button_state()
+
+
+    def update_team_button_state(self):
+        self.buttonTeamPrev.setDisabled(self.currentTeam == 0)
+        self.buttonTeamNext.setDisabled(self.currentTeam == self.numTeams - 1)
+        self.buttonTeamDelete.setDisabled(self.numTeams == 1)
+
+
+    def update_advertize_button_state(self):
+        self.buttonAdvertizePrev.setDisabled(self.currentAdvertize == 0)
+        self.buttonAdvertizeNext.setDisabled(self.currentAdvertize == self.numAdvertize - 1)
+        self.buttonAdvertizeDelete.setDisabled(self.numAdvertize == 1)
 
     def set_current_team_data(self):
         team = self.data[0]["teams"][self.currentTeam]
@@ -252,16 +285,14 @@ class Widget(QWidget):
         self.get_current_team_data()
         self.currentTeam -= 1
         self.set_current_team_data()
-        self.buttonTeamPrev.setDisabled(self.currentTeam == 0)
-        self.buttonTeamNext.setDisabled(self.currentTeam == self.numTeams - 1)
+        self.update_team_button_state()
 
     def button_team_next(self):
         print("button team next")
         self.get_current_team_data()
         self.currentTeam += 1
         self.set_current_team_data()
-        self.buttonTeamPrev.setDisabled(self.currentTeam == 0)
-        self.buttonTeamNext.setDisabled(self.currentTeam == self.numTeams - 1)
+        self.update_team_button_state()
 
     def button_team_add(self):
         print("button team add")
@@ -269,23 +300,13 @@ class Widget(QWidget):
         self.get_current_team_data()
 
         for d in self.data:
-            team = dict()
-            team["bild_heim"] = ""
-            team["bild_gast"] = ""
-            team["anzahl_spieler"] = 6
-            team["anzahl_saetze"] = 4
-            team["satzpunkte_anzeigen"] = "ja"
-            team["token_datei"] = "mannschaft.json"
-            team["token_bahn"] = "" 
-            team["anzeigedauer_s"] = 0   
+            team = create_team_dict()
             d["teams"].insert(self.currentTeam, team)
 
         self.numTeams += 1        
         self.set_current_team_data()
 
-        self.buttonTeamPrev.setDisabled(self.currentTeam == 0)
-        self.buttonTeamNext.setDisabled(self.currentTeam == self.numTeams - 1)
-        self.buttonTeamDelete.setDisabled(self.numTeams == 1)
+        self.update_team_button_state()
 
 
     def button_team_delete(self):
@@ -298,9 +319,7 @@ class Widget(QWidget):
         self.currentTeam = min(self.numTeams - 1, self.currentTeam)
 
         self.set_current_team_data()
-        self.buttonTeamPrev.setDisabled(self.currentTeam == 0)
-        self.buttonTeamNext.setDisabled(self.currentTeam == self.numTeams - 1)
-        self.buttonTeamDelete.setDisabled(self.numTeams == 1)
+        self.update_team_button_state()
 
 
     def button_team_home(self):
@@ -333,8 +352,7 @@ class Widget(QWidget):
         if self.currentAdvertize > 0:
             self.currentAdvertize -= 1
         self.set_current_advertize_data()
-        self.buttonAdvertizePrev.setDisabled(self.currentAdvertize == 0)
-        self.buttonAdvertizeNext.setDisabled(self.currentAdvertize == self.numAdvertize - 1)
+        self.update_advertize_button_state()
 
     def button_advertize_next(self):
         print("button advertize next")
@@ -342,8 +360,7 @@ class Widget(QWidget):
         if self.currentAdvertize < self.numAdvertize:
             self.currentAdvertize += 1
         self.set_current_advertize_data()
-        self.buttonAdvertizePrev.setDisabled(self.currentAdvertize == 0)
-        self.buttonAdvertizeNext.setDisabled(self.currentAdvertize == self.numAdvertize - 1)
+        self.update_advertize_button_state()
 
     def button_advertize_add(self):
         print("button advertize add")
@@ -351,18 +368,12 @@ class Widget(QWidget):
         self.get_current_advertize_data()
 
         for d in self.data:
-            adv = dict()
-            adv["bild"] = ""
-            adv["anzeigedauer_s"] = 0   
+            adv = create_advertize_dict()   
             d["werbung"].insert(self.currentAdvertize, adv)
 
         self.numAdvertize += 1        
         self.set_current_advertize_data()
-
-        self.buttonAdvertizePrev.setDisabled(self.currentAdvertize == 0)
-        self.buttonAdvertizeNext.setDisabled(self.currentAdvertize == self.numAdvertize - 1)
-        self.buttonAdvertizeDelete.setDisabled(self.numAdvertize == 1)
-
+        self.update_advertize_button_state()
 
     def button_advertize_delete(self):
         print("button advertize delete")
@@ -374,9 +385,7 @@ class Widget(QWidget):
         self.currentAdvertize = min(self.numAdvertize - 1, self.currentAdvertize)
 
         self.set_current_advertize_data()
-        self.buttonAdvertizePrev.setDisabled(self.currentAdvertize == 0)
-        self.buttonAdvertizeNext.setDisabled(self.currentAdvertize == self.numAdvertize - 1)
-        self.buttonAdvertizeDelete.setDisabled(self.numAdvertize == 1)
+        self.update_advertize_button_state()
 
     def button_advertize(self):
         print("button advertize")
